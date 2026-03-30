@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>♥🐱🐱🐱🐱🐱♥</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <h1> O.o </h1>
+            <div class="header-right">
+                <span id="userInfo" style="display:none;">欢迎，<strong id="usernameDisplay"></strong></span>
+                <button id="logoutBtn" class="btn-secondary" style="display:none; margin-left:10px;" onclick="logout()">退出登录</button>
+                <button id="loginBtn" class="btn-primary" onclick="showLoginModal()">登录 / 注册</button>
+            </div>
+        </header>
+
+        <!-- 标签页导航 -->
+        <nav class="tabs">
+            <button class="tab-btn active" onclick="switchTab('detect')">火焰检测</button>
+            <button class="tab-btn" onclick="switchTab('files')">文件存储</button>
+            <button class="tab-btn" onclick="switchTab('settings')">系统设置</button>
+            <button class="tab-btn" onclick="switchTab('future')">预留功能</button>
+        </nav>
+
+        <!-- 内容区域 -->
+        <main class="content">
+            <!-- 页面 1: 火焰检测 -->
+            <div id="tab-detect" class="tab-content active">
+                <div id="loginPrompt" class="login-prompt" style="display:none; text-align:center; padding:40px;">
+                    <h3>请先登录后使用火焰检测功能</h3>
+                    <button class="btn-primary" onclick="showLoginModal()">立即登录</button>
+                </div>
+                <div id="detectContent">
+                    <div class="upload-section">
+                        <div class="upload-box" id="dropZone">
+                            <input type="file" id="fileInput" accept="image/*" hidden>
+                            <p>点击或拖拽图片到此处</p>
+                            <button class="btn-primary" onclick="document.getElementById('fileInput').click()">选择图片</button>
+                        </div>
+                        <div id="fileInfo" class="file-info" style="display:none;"></div>
+                    </div>
+                    <div class="progress-section" id="progressSection" style="display:none;">
+                        <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+                        <p id="progressText">准备上传...</p>
+                        <p id="speedText" class="speed-text"></p>
+                    </div>
+                    <div id="resultSection" class="result-section" style="display:none;">
+                        <div class="result-summary" id="resultSummary"></div>
+                        <div class="result-image-container">
+                            <a id="resultLink" href="" target="_blank"><img id="resultImg" src="" alt="检测结果"></a>
+                        </div>
+                        <div id="resultDetails" class="result-details"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 页面 2: 文件存储 -->
+            <div id="tab-files" class="tab-content">
+                <div id="filesLoginPrompt" class="login-prompt" style="display:none; text-align:center; padding:40px;">
+                    <h3>请先登录后使用文件存储功能</h3>
+                    <button class="btn-primary" onclick="showLoginModal()">立即登录</button>
+                </div>
+                <div id="filesContent">
+                    <div class="dir-switcher">
+                        <button class="dir-btn active" data-dir="public">公共存储</button>
+                        <button class="dir-btn" data-dir="uploads">检测原图</button>
+                        <button class="dir-btn" data-dir="results">检测结果</button>
+                    </div>
+                    <div class="file-upload-area" id="fileDropZone">
+                        <input type="file" id="publicFileInput" multiple hidden>
+                        <p>拖拽文件到此处，或点击选择文件（支持批量上传）</p>
+                        <button class="btn-primary" onclick="document.getElementById('publicFileInput').click()">选择文件</button>
+                    </div>
+                    <div id="uploadProgressArea" class="upload-progress-area" style="display:none;">
+                        <div class="progress-bar"><div id="publicProgressFill" class="progress-fill"></div></div>
+                        <p id="uploadProgressText">正在上传...</p>
+                    </div>
+                    <!-- 修正文件列表头部：适配4列布局 -->
+                    <div class="file-list-header">
+                        <span>文件名</span>
+                        <span>大小</span>
+                        <span>上传时间</span>
+                        <span>操作</span>
+                    </div>
+                    <div class="file-list" id="fileList"><p class="empty-tip">加载中...</p></div>
+                </div>
+            </div>
+
+            <!-- 页面 3: 系统设置 -->
+            <div id="tab-settings" class="tab-content">
+                <div class="placeholder">
+                    <h3>⚙️ 系统设置</h3>
+                    <p>预留接口：可在此添加置信度阈值、模型切换、文件大小限制、上传白名单等功能。</p>
+                    <div class="setting-item">
+                        <label>置信度阈值 (Conf Threshold):</label>
+                        <input type="number" value="0.2" disabled>
+                    </div>
+                    <div class="setting-item">
+                        <label>单文件最大大小:</label>
+                        <input type="number" value="200" disabled> MB
+                    </div>
+                </div>
+            </div>
+
+            <!-- 页面 4: 预留功能（训练/验证） -->
+            <div id="tab-future" class="tab-content">
+                <div id="trainLoginPrompt" class="login-prompt" style="display:none; text-align:center; padding:40px;">
+                    <h3>请先登录后使用训练/验证功能</h3>
+                    <button class="btn-primary" onclick="showLoginModal()">立即登录</button>
+                </div>
+                <div id="trainContent">
+                    <div class="train-container">
+                        <!-- 任务提交区 -->
+                        <div class="train-section">
+                            <h3>🚀 提交新任务</h3>
+                            <div class="task-type-selector">
+                                <button class="task-type-btn active" data-type="train">训练模型</button>
+                                <button class="task-type-btn" data-type="val">验证模型</button>
+                            </div>
+
+                            <!-- 训练表单 -->
+                            <div id="trainForm" class="task-form">
+                                <div class="form-group">
+                                    <label>模型配置 / 预训练模型:</label>
+                                    <div class="input-with-refresh">
+                                        <select id="trainModelSelect" class="form-input" onchange="document.getElementById('trainModelPath').value=this.value">
+                                            <option value="">-- 选择模型文件 --</option>
+                                        </select>
+                                        <button class="btn-secondary" type="button" onclick="refreshModelList()" style="margin-left:10px; white-space:nowrap;">🔄 刷新</button>
+                                    </div>
+                                    <input type="text" id="trainModelPath" class="form-input" placeholder="或手动输入路径: E:/path/to/yolo11n.yaml 或 best.pt" style="margin-top:10px;">
+                                </div>
+                                <div class="form-group">
+                                    <label>数据集配置文件:</label>
+                                    <div class="input-with-refresh">
+                                        <select id="trainDatasetSelect" class="form-input" onchange="document.getElementById('trainDataYaml').value=this.value">
+                                            <option value="">-- 选择数据集 --</option>
+                                        </select>
+                                        <button class="btn-secondary" type="button" onclick="openDatasetModal()" style="margin-left:10px; white-space:nowrap;">📚 管理</button>
+                                    </div>
+                                    <input type="text" id="trainDataYaml" class="form-input" placeholder="或手动输入路径" style="margin-top:10px;">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>训练轮数 (Epochs):</label>
+                                        <input type="number" id="trainEpochs" class="form-input" value="50" min="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>批次大小 (Batch):</label>
+                                        <input type="number" id="trainBatch" class="form-input" value="16" min="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>图像尺寸 (ImgSz):</label>
+                                        <input type="number" id="trainImgsz" class="form-input" value="640" min="32">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>项目保存目录:</label>
+                                        <input type="text" id="trainProject" class="form-input" value="runs/train">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>实验名称:</label>
+                                        <input type="text" id="trainName" class="form-input" placeholder="留空自动生成">
+                                    </div>
+                                </div>
+                                <button class="btn-primary btn-full" onclick="submitTask('train')">提交训练任务</button>
+                            </div>
+
+                            <!-- 验证表单 -->
+                            <div id="valForm" class="task-form" style="display:none;">
+                                <div class="form-group">
+                                    <label>模型路径 (best.pt):</label>
+                                    <div class="input-with-refresh">
+                                        <select id="valModelSelect" class="form-input" onchange="document.getElementById('valModelPath').value=this.value">
+                                            <option value="">-- 选择模型文件 --</option>
+                                        </select>
+                                        <button class="btn-secondary" type="button" onclick="refreshModelList()" style="margin-left:10px; white-space:nowrap;">🔄 刷新</button>
+                                    </div>
+                                    <input type="text" id="valModelPath" class="form-input" placeholder="或手动输入路径: E:/path/to/best.pt" style="margin-top:10px;">
+                                </div>
+                                <div class="form-group">
+                                    <label>数据集配置文件:</label>
+                                    <div class="input-with-refresh">
+                                        <select id="valDatasetSelect" class="form-input" onchange="document.getElementById('valDataYaml').value=this.value">
+                                            <option value="">-- 选择数据集 --</option>
+                                        </select>
+                                        <button class="btn-secondary" type="button" onclick="openDatasetModal()" style="margin-left:10px; white-space:nowrap;">📚 管理</button>
+                                    </div>
+                                    <input type="text" id="valDataYaml" class="form-input" placeholder="或手动输入路径" style="margin-top:10px;">
+                                </div>
+                                <div class="form-group">
+                                    <label>标签文件夹路径 (可选，自动解析失败时填写):</label>
+                                    <input type="text" id="valLabelPath" class="form-input" placeholder="例如: E:/123/D-Fire2/test/labels">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>置信度区间最小值:</label>
+                                        <input type="number" id="valConfMin" class="form-input" value="0.5" step="0.05" min="0" max="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>置信度区间最大值:</label>
+                                        <input type="number" id="valConfMax" class="form-input" value="1.0" step="0.05" min="0" max="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>IOU阈值:</label>
+                                        <input type="number" id="valIouThreshold" class="form-input" value="0.5" step="0.05" min="0" max="1">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>图像尺寸 (ImgSz):</label>
+                                    <input type="number" id="valImgsz" class="form-input" value="640" min="32">
+                                </div>
+                                <button class="btn-primary btn-full" onclick="submitTask('val')">提交验证任务</button>
+                            </div>
+                        </div>
+
+                        <!-- 任务列表区 -->
+                        <div class="train-section">
+                            <div class="section-header">
+                                <h3>📋 任务列表</h3>
+                                <button class="btn-secondary" onclick="refreshTaskList()">刷新</button>
+                            </div>
+                            <div id="taskList" class="task-list">
+                                <p class="empty-tip">加载中...</p>
+                            </div>
+                        </div>
+
+                        <!-- 任务日志区 -->
+                        <div class="train-section" id="logSection" style="display:none;">
+                            <div class="section-header">
+                                <h3>📝 任务日志</h3>
+                                <button class="btn-secondary" onclick="closeLogSection()">关闭</button>
+                            </div>
+                            <div id="taskLogContent" class="log-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 登录/注册模态框 -->
+    <div id="authModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeAuthModal()">&times;</span>
+
+            <!-- 登录表单 -->
+            <div id="loginForm">
+                <h2>用户登录</h2>
+                <input type="text" id="loginUsername" placeholder="用户名" class="form-input">
+                <input type="password" id="loginPassword" placeholder="密码" class="form-input">
+                <button class="btn-primary btn-full" onclick="login()">登录</button>
+                <p class="switch-form" onclick="showRegisterForm()">没有账号？点击注册</p>
+            </div>
+
+            <!-- 注册表单 -->
+            <div id="registerForm" style="display:none;">
+                <h2>用户注册</h2>
+                <input type="text" id="regUsername" placeholder="用户名 (至少3位)" class="form-input">
+                <input type="password" id="regPassword" placeholder="密码 (至少6位)" class="form-input">
+                <input type="password" id="regConfirmPassword" placeholder="确认密码" class="form-input">
+                <button class="btn-primary btn-full" onclick="register()">注册</button>
+                <p class="switch-form" onclick="showLoginForm()">已有账号？点击登录</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据集管理弹窗 -->
+    <div id="datasetModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:600px; width:90%;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3>📚 数据集管理</h3>
+                <span class="close-btn" onclick="closeDatasetModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="dataset-section">
+                    <h4>添加新数据集</h4>
+                    <div class="form-group">
+                        <label>数据集名称:</label>
+                        <input type="text" id="newDatasetName" class="form-input" placeholder="例如: 我的火灾数据集">
+                    </div>
+                    <div class="form-group">
+                        <label>数据集路径 (data.yaml):</label>
+                        <input type="text" id="newDatasetPath" class="form-input" placeholder="例如: E:/path/to/data.yaml">
+                    </div>
+                    <div class="form-group">
+                        <label style="display:flex; align-items:center; gap:10px;">
+                            <input type="checkbox" id="newDatasetDefault">
+                            <span>设为默认数据集</span>
+                        </label>
+                    </div>
+                    <button class="btn-primary" onclick="addDataset()">添加数据集</button>
+                </div>
+
+                <div class="dataset-section" style="margin-top:20px;">
+                    <h4>已有数据集</h4>
+                    <div id="datasetList" class="dataset-list">
+                        <p class="empty-tip">加载中...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

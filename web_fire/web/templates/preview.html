@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片预览</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .preview-container { text-align: center; padding: 40px; }
+        .preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        /* 【核心】不保证清晰度，只保证可查性：使用 CSS 控制显示大小 */
+        .preview-img {
+            max-width: 90%;
+            max-height: 80vh;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            /* 强制不保持原始清晰度，加快加载 */
+            image-rendering: auto;
+        }
+        .btn-back { background: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <h1>图片预览</h1>
+            <a href="/" class="btn-back">← 返回首页</a>
+        </header>
+        <div class="preview-container">
+            <!-- 【核心】直接使用 storage 路由加载图片，不做任何处理 -->
+            <img src="/storage/{{ dir }}/{{ filename }}" class="preview-img" alt="{{ filename }}" onerror="this.src='{{ url_for('static', filename='css/style.css') }}'; this.alt='图片加载失败';">
+            <p style="margin-top: 20px; color: #666;">{{ filename }}</p>
+            <p style="color: #999; font-size: 0.9em;">目录: {{ dir }}</p>
+        </div>
+    </div>
+</body>
+</html>

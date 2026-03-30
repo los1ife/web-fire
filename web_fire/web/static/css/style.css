@@ -1,0 +1,386 @@
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+body { background-color: #f0f2f5; }
+
+.app-container { max-width: 1200px; margin: 20px auto; background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
+
+/* Header */
+.header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+.version { opacity: 0.8; font-size: 0.9em; }
+
+/* Tabs */
+.tabs { display: flex; background: #f8f9fa; border-bottom: 1px solid #dee2e6; }
+.tab-btn { flex: 1; padding: 15px; border: none; background: none; cursor: pointer; font-size: 16px; transition: 0.3s; }
+.tab-btn:hover { background: #e9ecef; }
+.tab-btn.active { background: white; border-bottom: 3px solid #667eea; font-weight: bold; color: #667eea; }
+
+/* Content */
+.content { padding: 30px; min-height: 500px; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* 通用按钮 */
+.btn-primary { background: #667eea; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 16px; transition: 0.3s; }
+.btn-primary:hover { background: #5568d3; }
+.btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+.btn-secondary { background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; }
+.btn-danger { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+.btn-danger:hover { background: #c82333; }
+
+/* ========== 火焰检测页面样式 ========== */
+.upload-box { border: 2px dashed #667eea; border-radius: 10px; padding: 40px; text-align: center; background: #f8f9ff; cursor: pointer; transition: 0.3s; }
+.upload-box:hover { background: #f0f4ff; }
+.file-info { margin-top: 15px; padding: 10px; background: #e9ecef; border-radius: 5px; }
+
+/* 进度条 */
+.progress-section { margin-top: 20px; }
+.progress-bar { width: 100%; height: 20px; background: #e9ecef; border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; background: #28a745; width: 0%; transition: width 0.2s linear; }
+.speed-text { color: #666; margin-top: 5px; }
+
+/* 检测结果 */
+.result-section { margin-top: 30px; }
+.result-summary { background: #d4edda; border-left: 5px solid #28a745; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+.result-image-container { text-align: center; margin-bottom: 20px; }
+.result-image-container img { max-width: 100%; border: 1px solid #ddd; border-radius: 5px; }
+.result-details { border-top: 1px solid #eee; padding-top: 20px; }
+.detail-item { padding: 10px; border-bottom: 1px solid #f0f0f0; }
+
+/* ========== 文件存储服务器样式 ========== */
+/* 目录切换 */
+.dir-switcher { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.dir-btn { padding: 8px 20px; border: 1px solid #dee2e6; background: white; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+.dir-btn:hover { border-color: #667eea; color: #667eea; }
+.dir-btn.active { background: #667eea; color: white; border-color: #667eea; }
+
+/* 上传区域 */
+.file-upload-area { border: 2px dashed #6c757d; border-radius: 10px; padding: 30px; text-align: center; background: #f8f9fa; cursor: pointer; transition: 0.3s; margin-bottom: 20px; }
+.file-upload-area:hover { background: #e9ecef; }
+.upload-progress-area { margin-bottom: 20px; }
+
+/* 文件列表 - 修复4列布局 */
+.file-list-header {
+    display: grid;
+    grid-template-columns: 4fr 1fr 2fr 1.5fr;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    font-weight: bold;
+    border-radius: 5px 5px 0 0;
+    gap: 10px;
+}
+.file-list {
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    min-height: 200px;
+}
+/* 修复文件项布局：匹配4列header */
+.file-item {
+    display: grid;
+    grid-template-columns: 4fr 1fr 2fr 1.5fr;
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    align-items: center;
+    gap: 10px;
+}
+.file-item:last-child { border-bottom: none; }
+.file-item:hover { background: #f8f9ff; }
+
+/* 带缩略图的文件项样式 */
+.file-info-with-thumb {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.file-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.file-thumb:hover {
+    transform: scale(1.1);
+}
+.file-name-text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.file-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.file-actions a { color: #667eea; text-decoration: none; }
+.empty-tip { text-align: center; padding: 60px; color: #999; }
+
+/* 占位页 */
+.placeholder { text-align: center; color: #666; padding: 40px; }
+.placeholder ul { text-align: left; display: inline-block; margin-top: 20px; line-height: 2; }
+.setting-item { margin-top: 20px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; }
+.setting-item input { margin-left: 10px; padding: 5px; width: 100px; }
+
+/* Header 右侧 */
+.header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* 登录提示 */
+.login-prompt { background: #fff3cd; padding: 40px; border-radius: 10px; margin-bottom: 20px; }
+
+/* 模态框 */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.modal-body {
+    padding: 10px 0;
+}
+.close-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #aaa;
+    line-height: 1;
+}
+.close-btn:hover { color: #333; }
+.form-input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+.btn-full { width: 100%; margin-top: 10px; }
+.switch-form { text-align: center; margin-top: 15px; color: #667eea; cursor: pointer; }
+.switch-form:hover { text-decoration: underline; }
+
+/* 文件列表预览按钮 */
+.file-actions .btn-preview {
+    background: #17a2b8;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 5px;
+}
+.file-actions .btn-preview:hover { background: #138496; }
+
+/* 训练/验证界面 */
+.train-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+@media (max-width: 900px) {
+    .train-container { grid-template-columns: 1fr; }
+}
+.train-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+.train-section h3 { margin-bottom: 15px; color: #333; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+
+/* 任务类型选择 */
+.task-type-selector { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.task-type-btn {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #667eea;
+    background: white;
+    color: #667eea;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+    min-width: 120px;
+}
+.task-type-btn:hover { background: #f0f4ff; }
+.task-type-btn.active { background: #667eea; color: white; }
+
+/* 表单 */
+.task-form { display: block; }
+.form-group { margin-bottom: 15px; }
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+}
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+@media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+}
+
+/* 带刷新按钮的输入框 */
+.input-with-refresh {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+.input-with-refresh .form-input {
+    flex: 1;
+    min-width: 0; /* 修复flex布局下输入框溢出 */
+}
+
+/* 任务列表 */
+.task-list {
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background: white;
+    max-height: 400px;
+    overflow-y: auto;
+}
+.task-item {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: 0.2s;
+    display: block; /* 覆盖grid布局 */
+}
+.task-item:hover { background: #f8f9ff; }
+.task-item:last-child { border-bottom: none; }
+.task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.task-id { font-weight: bold; color: #667eea; }
+.task-status {
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 0.85em;
+    font-weight: bold;
+    white-space: nowrap;
+}
+.status-pending { background: #fff3cd; color: #856404; }
+.status-running { background: #cce5ff; color: #004085; }
+.status-completed { background: #d4edda; color: #155724; }
+.status-failed { background: #f8d7da; color: #721c24; }
+.task-meta { color: #666; font-size: 0.9em; }
+
+/* 日志区域 */
+.log-content {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.9em;
+    max-height: 400px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    line-height: 1.4;
+}
+
+/* 数据集管理 */
+.dataset-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+.dataset-section h4 { margin-bottom: 15px; color: #333; }
+.dataset-list {
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background: white;
+    max-height: 300px;
+    overflow-y: auto;
+}
+.dataset-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    display: block; /* 覆盖grid布局 */
+}
+.dataset-item:last-child { border-bottom: none; }
+.dataset-info { flex: 1; }
+.dataset-name { font-weight: bold; color: #333; }
+.dataset-path { color: #666; font-size: 0.9em; margin-top: 3px; }
+.dataset-default {
+    display: inline-block;
+    background: #28a745;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+.dataset-actions { display: flex; gap: 8px; }
+.dataset-actions button { padding: 5px 10px; font-size: 0.9em; }
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+    .content { padding: 15px; }
+    .header { padding: 15px; flex-direction: column; gap: 10px; align-items: flex-start; }
+    .header-right { width: 100%; justify-content: flex-end; }
+    .tab-btn { padding: 10px; font-size: 14px; }
+    .upload-box { padding: 20px; }
+    .file-upload-area { padding: 20px; }
+    .file-list-header {
+        grid-template-columns: 3fr 1fr 1.5fr 1.5fr;
+        font-size: 14px;
+    }
+    .file-item {
+        grid-template-columns: 3fr 1fr 1.5fr 1.5fr;
+        font-size: 14px;
+    }
+    .modal-content {
+        max-width: 100%;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .file-list-header {
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        font-size: 12px;
+    }
+    .file-item {
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        font-size: 12px;
+    }
+    .task-type-selector {
+        flex-direction: column;
+    }
+    .dir-switcher {
+        flex-direction: column;
+    }
+    .dir-btn {
+        width: 100%;
+    }
+}
